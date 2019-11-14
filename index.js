@@ -1,12 +1,31 @@
 "use strict";
+function download(data, filename, type) {
+    const file = new Blob([data], { type: type });
+    if (window.navigator.msSaveOrOpenBlob) // IE10+
+        window.navigator.msSaveOrOpenBlob(file, filename);
+    else { // Others
+        const a = document.createElement("a"), url = URL.createObjectURL(file);
+        a.href = url;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        setTimeout(function () {
+            document.body.removeChild(a);
+            window.URL.revokeObjectURL(url);
+        }, 0);
+    }
+}
 function load() {
     console.log("hi");
     const input = document.getElementById("input");
     const trim = document.getElementById("trim");
-    const button = document.getElementById("randomize");
-    if (button === null || input === null || trim === null)
-        throw new Error("input or button not found");
-    button.addEventListener("click", e => {
+    const randomizeButton = document.getElementById("randomize");
+    const name = document.getElementById("name");
+    const saveButton = document.getElementById("save");
+    if (randomizeButton === null || input === null || trim === null || saveButton === null || name === null)
+        throw new Error("something not found");
+    name.value = "file.txt";
+    randomizeButton.addEventListener("click", e => {
         const inputLinesNotSplit = input.value.split('\n');
         const inputLines = trim.checked ? inputLinesNotSplit.map(x => x.trim()) : inputLinesNotSplit;
         const length = inputLines.length;
@@ -17,6 +36,9 @@ function load() {
             outputLines.push(randomLine);
         }
         input.value = outputLines.join('\n');
+    });
+    saveButton.addEventListener("click", ev => {
+        download(input.value, name.value, "text/plain");
     });
 }
 function getRandomInt(min, max) {

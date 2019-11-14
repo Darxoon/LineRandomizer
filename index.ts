@@ -4,12 +4,16 @@ function load() {
 
 	const input = document.getElementById("input") as HTMLTextAreaElement;
 	const trim = document.getElementById("trim") as HTMLInputElement;
-	const button = document.getElementById("randomize") as HTMLButtonElement;
+	const randomizeButton = document.getElementById("randomize") as HTMLButtonElement;
+	const name = document.getElementById("name") as HTMLInputElement;
+	const saveButton = document.getElementById("save") as HTMLButtonElement;
 
-	if(button === null || input === null || trim === null)
-		throw new Error("input or button not found");
+	if(randomizeButton === null || input === null || trim === null || saveButton === null || name === null)
+		throw new Error("something not found");
 
-	button.addEventListener("click", e => {
+	name.value = "file.txt";
+
+	randomizeButton.addEventListener("click", e => {
 
 		const inputLinesNotSplit: string[] = input.value.split('\n');
 		const inputLines: string[] = trim.checked ? inputLinesNotSplit.map(x => x.trim()) : inputLinesNotSplit;
@@ -25,6 +29,10 @@ function load() {
 
 		input.value = outputLines.join('\n');
 
+	})
+
+	saveButton.addEventListener("click", ev => {
+		download(input.value, name.value, "text/plain")
 	})
 
 }
